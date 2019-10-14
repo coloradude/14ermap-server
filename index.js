@@ -27,9 +27,19 @@ app.get('/peaks/:pkKey', (req, res) => {
   })
 })
 
-app.get('/routes/:routeId', (req, res) => {
-  routes.findOne(routeId)
+app.get('/routes/:_id', (req, res) => {
+  routes.findOne(req.params._id)
     .then(route => res.send(route))
+    .catch(err => console.log(err))
+})
+
+app.get('/trailheads/:_id', (req, res) => {
+  trailheads.findOne(req.params._id)
+    .then(trailhead => {
+      peaks.find({})
+        .then(peaks => peaks.filter(peak => trailhead.pkKeys.includes(peak.pkKey)))
+        .then(peaks => res.send({trailhead, peaks}))
+    })
 })
 
 app.listen( 8000, () => console.log(`Server is listening on port 8000`))
